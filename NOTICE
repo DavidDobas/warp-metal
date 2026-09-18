@@ -1,0 +1,5 @@
+warp-metal
+Copyright (c) 2026 David Dobas
+
+Contains code derived from NVIDIA Warp (https://github.com/NVIDIA/warp),
+Copyright (c) NVIDIA Corporation, licensed under the Apache License 2.0.

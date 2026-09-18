@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "warp-metal"
+version = "1.18.0.dev20260917"
+description = "Apple Metal backend for NVIDIA Warp: run Warp kernels on Apple Silicon GPUs"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "David Dobas" }]
+keywords = ["warp", "metal", "apple-silicon", "gpu", "simulation", "mujoco"]
+classifiers = [
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "warp-lang==1.18.0.dev20260917",
+  "packaging>=23",
+]
+
+[project.urls]
+Repository = "https://github.com/DavidDobas/warp-metal"
+"Warp fork" = "https://github.com/DavidDobas/warp"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/warp_metal"]
+artifacts = ["src/warp_metal/bin/*.dylib"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"warp_metal_boot.pth" = "warp_metal_boot.pth"
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tools", "README.md", "LICENSE", "NOTICE", "warp_metal_boot.pth", "pyproject.toml"]
