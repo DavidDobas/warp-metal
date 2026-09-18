@@ -47,11 +47,17 @@ zero-copy CPU tensor, and NumPy arrays or Torch CPU tensors can be passed to ker
 ## What does not work
 
 - **float64**: Apple GPUs have no double type. Kernels that use it raise at launch.
-- **Signed 64-bit atomic min/max** are plain read-modify-write (Metal has no such atomic).
+- **Some atomics are not atomic**: Metal only has 32-bit atomics, so 8-bit operations, most 16-bit and 64-bit
+  ones, and `&=`/`|=`/`^=` on those types are plain read-modify-write.
 - **Spinlocks across threads**: Apple GPUs do not guarantee forward progress between SIMD lanes.
 - `wp.fixedarray`, fabric arrays, deterministic scatter mode, saveable (APIC) captures.
 - Native snippets must be valid Metal: pointer casts need `WP_THREAD`/`WP_DEVICE`, no `long long`.
 - Transcendental functions may differ from NumPy by 1 ulp.
+- **Known issue:** in a kernel with more than one product of two 4x4 matrices, the gradient of one operand can
+  come out zero (a Metal compiler miscompilation, no workaround yet). Forward results and smaller matrices are fine.
+
+The full list, including which atomic operations are not atomic on Metal, is in the fork's user guide:
+https://github.com/DavidDobas/warp/blob/daviddobas/metal-backend/docs/user_guide/metal.rst
 
 ## Versions
 
