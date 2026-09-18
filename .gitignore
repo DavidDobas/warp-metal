@@ -1,0 +1,11 @@
+.venv/
+dist/
+build/
+__pycache__/
+*.egg-info/
+
+# written by tools/generate.py from the Warp fork; built into the wheel, never committed
+src/warp_metal/_overlay/
+src/warp_metal/native/
+src/warp_metal/bin/
+src/warp_metal/_generated.py
