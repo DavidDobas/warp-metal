@@ -11,7 +11,7 @@ Until the first PyPI release, install the wheel from the GitHub release (the pin
 nightly comes from NVIDIA's package index, so add that index once):
 
 ```
-uv add "warp-metal @ https://github.com/DavidDobas/warp-metal/releases/download/v1.18.0.dev2026091701/warp_metal-1.18.0.dev2026091701-py3-none-macosx_11_0_arm64.whl" \
+uv add "warp-metal @ https://github.com/DavidDobas/warp-metal/releases/download/v1.18.0.dev2026091702/warp_metal-1.18.0.dev2026091702-py3-none-macosx_11_0_arm64.whl" \
        --index nvidia=https://pypi.nvidia.com
 ```
 
@@ -53,8 +53,6 @@ zero-copy CPU tensor, and NumPy arrays or Torch CPU tensors can be passed to ker
 - `wp.fixedarray`, fabric arrays, deterministic scatter mode, saveable (APIC) captures.
 - Native snippets must be valid Metal: pointer casts need `WP_THREAD`/`WP_DEVICE`, no `long long`.
 - Transcendental functions may differ from NumPy by 1 ulp.
-- **Known issue:** in a kernel with more than one product of two 4x4 matrices, the gradient of one operand can
-  come out zero (a Metal compiler miscompilation, no workaround yet). Forward results and smaller matrices are fine.
 
 The full list, including which atomic operations are not atomic on Metal, is in the fork's user guide:
 https://github.com/DavidDobas/warp/blob/daviddobas/metal-backend/docs/user_guide/metal.rst
