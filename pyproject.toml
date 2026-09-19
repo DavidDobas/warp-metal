@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "warp-metal"
-version = "1.17.0.1"
+version = "1.17.0.2"
 description = "Apple Metal backend for NVIDIA Warp: run Warp kernels on Apple Silicon GPUs"
 readme = "README.md"
 license = "Apache-2.0"
@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/DavidDobas/warp-metal"
-"Warp fork" = "https://github.com/DavidDobas/warp"
+Repository = "https://github.com/innate-inc/warp-metal"
+"Warp fork" = "https://github.com/innate-inc/warp"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/warp_metal"]

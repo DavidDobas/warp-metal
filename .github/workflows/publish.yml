@@ -1,0 +1,50 @@
+name: Publish to PyPI
+
+# Uploads the wheel that is already attached to a GitHub release of this repository. Nothing is built here:
+# the wheel needs an Apple GPU and the Warp fork (see tools/release.py), and a PyPI version must be the very
+# file that was tested and that other projects lock by hash, so the expected SHA-256 is an input.
+#
+# Authentication is PyPI "trusted publishing" (OpenID Connect): no token is stored anywhere. On PyPI the
+# publisher is configured as owner innate-inc, repository warp-metal, workflow publish.yml, environment pypi.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag whose wheel is published, for example v1.17.0.1"
+        required: true
+        type: string
+      sha256:
+        description: "SHA-256 the wheel must have (from the release notes)"
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write # trusted publishing
+    steps:
+      - name: Download the wheel attached to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern '*.whl' --dir dist
+          ls -l dist
+
+      - name: Check that it is the expected file
+        env:
+          EXPECTED: ${{ inputs.sha256 }}
+        run: |
+          set -euo pipefail
+          count=$(find dist -name '*.whl' | wc -l)
+          if [ "$count" -ne 1 ]; then echo "expected exactly one wheel on the release, found $count"; exit 1; fi
+          echo "$EXPECTED  $(find dist -name '*.whl')" | sha256sum --check --strict
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
