@@ -124,6 +124,9 @@ python tools/release.py <fork checkout> --revision 01
 4. builds the wheel, installs it next to the stock package in a fresh environment and runs
    `tools/smoke_test.py` on the GPU.
 
+Publishing to PyPI is a separate, manual step: the `Publish to PyPI` workflow uploads the wheel attached to a
+GitHub release after checking its SHA-256, through PyPI trusted publishing, so no token is stored.
+
 The wheel records the fork commit it was built from (`warp_metal.FORK_COMMIT`); that commit is the
 readable source of everything the wheel overlays. The LLVM helper library used for CPU kernels comes
 from the stock `warp-lang` package.
