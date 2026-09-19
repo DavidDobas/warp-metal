@@ -5,7 +5,7 @@ name: Publish to PyPI
 # file that was tested and that other projects lock by hash, so the expected SHA-256 is an input.
 #
 # Authentication is PyPI "trusted publishing" (OpenID Connect): no token is stored anywhere. On PyPI the
-# publisher is configured as owner DavidDobas, repository warp-metal, workflow publish.yml, environment pypi.
+# publisher is configured as owner innate-inc, repository warp-metal, workflow publish.yml, environment pypi.
 
 on:
   workflow_dispatch:

@@ -34,7 +34,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument(
         "fork",
-        help="checkout of https://github.com/DavidDobas/warp at the commit to release",
+        help="checkout of https://github.com/innate-inc/warp at the commit to release",
     )
     ap.add_argument(
         "--revision",
@@ -105,7 +105,7 @@ def main():
         target = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         notes = (
             f"Overlays warp-lang {warp_version}. Built from the Warp fork at "
-            f"https://github.com/DavidDobas/warp/commit/{fork_commit(fork)}."
+            f"https://github.com/innate-inc/warp/commit/{fork_commit(fork)}."
         )
         run(
             ["gh", "release", "create", f"v{version}", wheel_path, "--prerelease", "--target", target,

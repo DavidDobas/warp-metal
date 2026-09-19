@@ -1,4 +1,4 @@
-"""Generate the overlay from a checkout of the Warp fork (https://github.com/DavidDobas/warp).
+"""Generate the overlay from a checkout of the Warp fork (https://github.com/innate-inc/warp).
 
 Usage:
     python tools/generate.py <fork checkout> --stock <unpacked stock warp-lang wheel> [--revision NN]
@@ -97,7 +97,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument(
         "fork",
-        help="checkout of https://github.com/DavidDobas/warp with warp/bin built",
+        help="checkout of https://github.com/innate-inc/warp with warp/bin built",
     )
     ap.add_argument(
         "--stock",
