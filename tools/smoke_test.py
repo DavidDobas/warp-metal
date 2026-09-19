@@ -17,7 +17,10 @@ def scale(a: wp.array[float], s: float):
     a[i] = a[i] * s
 
 
-for device in ("metal:0", "cpu"):  # the CPU path needs the LLVM helper library of the stock package
+for device in (
+    "metal:0",
+    "cpu",
+):  # the CPU path needs the LLVM helper library of the stock package
     a = wp.array([1.0, 2.0, 3.0], dtype=float, device=device)
     wp.launch(scale, dim=3, inputs=[a, 2.0], device=device)
     np.testing.assert_allclose(a.numpy(), [2.0, 4.0, 6.0])
@@ -33,4 +36,6 @@ eye = warp.sparse.bsr_identity(4, block_type=wp.float32, device="metal:0")
 x = wp.ones(4, dtype=float, device="metal:0")
 np.testing.assert_allclose((eye @ x).numpy(), np.ones(4))
 
-print(f"ok: warp {wp.config.version}, warp-metal from fork {warp_metal.FORK_COMMIT[:12]}, device {wp.get_device('metal:0').name}")
+print(
+    f"ok: warp {wp.config.version}, warp-metal from fork {warp_metal.FORK_COMMIT[:12]}, device {wp.get_device('metal:0').name}"
+)

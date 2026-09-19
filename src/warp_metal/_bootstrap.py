@@ -13,8 +13,14 @@ import os
 import sys
 
 try:
-    from warp_metal._generated import FORK_COMMIT, OVERLAY_MODULES, REQUIRED_WARP_VERSION
-except ImportError:  # a source checkout: the overlay is generated at release time (tools/release.py)
+    from warp_metal._generated import (
+        FORK_COMMIT,
+        OVERLAY_MODULES,
+        REQUIRED_WARP_VERSION,
+    )
+except (
+    ImportError
+):  # a source checkout: the overlay is generated at release time (tools/release.py)
     FORK_COMMIT, OVERLAY_MODULES, REQUIRED_WARP_VERSION = None, [], None
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -36,11 +42,18 @@ def _engage():
     if _state["checked"]:
         return _state["active"]
     _state["checked"] = True
-    if os.environ.get("WARP_METAL_DISABLE"):
+    if os.environ.get("WARP_METAL_DISABLE", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    ):
         _state["reason"] = "disabled by WARP_METAL_DISABLE"
         return False
     if REQUIRED_WARP_VERSION is None:
-        _state["reason"] = "this is a source checkout without the generated overlay; install a released wheel"
+        _state["reason"] = (
+            "this is a source checkout without the generated overlay; install a released wheel"
+        )
         return False
     if sys.platform != "darwin":
         _state["reason"] = f"platform {sys.platform} is not macOS"
@@ -76,7 +89,9 @@ class _Finder(importlib.abc.MetaPathFinder):
         if name not in OVERLAY_MODULES or not _engage():
             return None
         file = os.path.join(_OVERLAY_DIR, name + ".py")
-        return importlib.util.spec_from_file_location(fullname, file, loader=_Loader(fullname, file))
+        return importlib.util.spec_from_file_location(
+            fullname, file, loader=_Loader(fullname, file)
+        )
 
 
 def status():

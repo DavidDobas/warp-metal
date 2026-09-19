@@ -19,7 +19,6 @@ classifiers = [
 ]
 dependencies = [
   "warp-lang==1.18.0.dev20260917",
-  "packaging>=23",
 ]
 
 [project.urls]

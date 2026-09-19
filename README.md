@@ -57,7 +57,7 @@ zero-copy CPU tensor, and NumPy arrays or Torch CPU tensors can be passed to ker
   matrices. Warp's own matrix product avoids it; check hand-written loop nests of that size against the CPU.
 
 The full list, including which atomic operations are not atomic on Metal, is in the fork's user guide:
-https://github.com/DavidDobas/warp/blob/daviddobas/metal-backend/docs/user_guide/metal.rst
+https://github.com/DavidDobas/warp/blob/main/docs/user_guide/metal.rst
 
 ## Versions
 
@@ -68,14 +68,16 @@ previews the revision is two digits appended to the date: `1.18.0.dev2026091701`
 The package overlays modules of one exact `warp-lang` version and pins it as a dependency
 (see `pyproject.toml`). A new `warp-lang` release needs a matching `warp-metal` release; until it
 ships, stay on the previous Warp. If the versions do not match, Warp loads unmodified and a
-message on stderr says why. `WARP_METAL_DISABLE=1` turns the overlay off.
+message on stderr says why. `WARP_METAL_DISABLE=1` (or `true`) turns the overlay off.
 
 Requires macOS 15 or newer on Apple Silicon (Metal 3.2).
 
 ## Using it with mjlab and MuJoCo Warp
 
-mjlab and MuJoCo Warp need two small, generic changes to run on a non-CUDA GPU device (pull
-requests are open); until they are merged, pin the patched branches:
+mjlab and MuJoCo Warp need two small, generic changes to run on a non-CUDA GPU device. They are
+carried in branches of my forks and have not been proposed upstream yet
+([MuJoCo Warp](https://github.com/DavidDobas/mujoco_warp/pull/1),
+[mjlab](https://github.com/DavidDobas/mjlab/pull/1)). Until they are upstream, pin those branches:
 
 ```toml
 [tool.uv.sources]
@@ -103,8 +105,7 @@ widens with more environments.
 
 This repository holds no copy of Warp. It contains the import hook (`src/warp_metal/_bootstrap.py`),
 the tools that build a wheel, and this README. The backend itself is developed and tested in a fork
-of Warp, https://github.com/DavidDobas/warp (branch `daviddobas/metal-backend`), which follows
-NVIDIA's `main` branch.
+of Warp, https://github.com/DavidDobas/warp, whose `main` branch is NVIDIA's `main` plus the Metal backend.
 
 A release is built from a checkout of that fork:
 
