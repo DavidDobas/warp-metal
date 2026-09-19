@@ -53,6 +53,8 @@ zero-copy CPU tensor, and NumPy arrays or Torch CPU tensors can be passed to ker
 - `wp.fixedarray`, fabric arrays, deterministic scatter mode, saveable (APIC) captures.
 - Native snippets must be valid Metal: pointer casts need `WP_THREAD`/`WP_DEVICE`, no `long long`.
 - Transcendental functions may differ from NumPy by 1 ulp.
+- Apple's GPU compiler can miscompile kernels with several inlined, fully unrolled products of 4x4 or larger
+  matrices. Warp's own matrix product avoids it; check hand-written loop nests of that size against the CPU.
 
 The full list, including which atomic operations are not atomic on Metal, is in the fork's user guide:
 https://github.com/DavidDobas/warp/blob/daviddobas/metal-backend/docs/user_guide/metal.rst
