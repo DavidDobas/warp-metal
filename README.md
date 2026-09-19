@@ -7,6 +7,9 @@ such as [MuJoCo Warp](https://github.com/google-deepmind/mujoco_warp) and
 [mjlab](https://github.com/mujocolab/mjlab), keep their normal dependency on `warp-lang`; on a Mac
 you add this one package and simulate on the GPU.
 
+This is an independent community project. It is not affiliated with or endorsed by NVIDIA; Warp is
+NVIDIA's project and trademark.
+
 ```
 uv add warp-metal        # or: pip install warp-metal
 ```
