@@ -31,9 +31,7 @@ def run(cmd, cwd=None):
 
 
 def main():
-    ap = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument(
         "fork",
         help="checkout of https://github.com/DavidDobas/warp at the commit to release",
@@ -55,7 +53,8 @@ def main():
     )
     args = ap.parse_args()
     fork = os.path.abspath(args.fork)
-    warp_version = open(os.path.join(fork, "VERSION.md")).read().strip()
+    with open(os.path.join(fork, "VERSION.md")) as f:
+        warp_version = f.read().strip()
 
     with tempfile.TemporaryDirectory() as tmp:
         # stock wheel: what the overlay is compared against and what users will have installed
@@ -64,9 +63,7 @@ def main():
              "--python-version", "3.12", "--extra-index-url", NVIDIA_INDEX, f"warp-lang=={warp_version}", "-d", tmp]
         )  # fmt: skip
         stock = os.path.join(tmp, "stock")
-        with zipfile.ZipFile(
-            glob.glob(os.path.join(tmp, "warp_lang-*.whl"))[0]
-        ) as wheel:
+        with zipfile.ZipFile(glob.glob(os.path.join(tmp, "warp_lang-*.whl"))[0]) as wheel:
             wheel.extractall(stock)
 
         if not args.skip_build:
@@ -92,20 +89,19 @@ def main():
     print(f"\nbuilt and tested {wheel_path}")
     if args.publish:
         version = os.path.basename(wheel_path).split("-")[1]
-        committed = subprocess.check_output(
-            ["git", "show", "HEAD:pyproject.toml"], cwd=ROOT, text=True
-        )
+        committed = subprocess.check_output(["git", "show", "HEAD:pyproject.toml"], cwd=ROOT, text=True)
         if f'version = "{version}"' not in committed:
-            sys.exit(
-                f"error: HEAD does not declare version {version}; commit pyproject.toml before publishing"
-            )
-        target = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip()
-        run(["gh", "release", "create", f"v{version}", wheel_path, "--prerelease", "--target", target,
-             "--title", f"warp-metal {version}",
-             "--notes", f"Overlays warp-lang {warp_version}. Built from the Warp fork at "
-             f"https://github.com/DavidDobas/warp/commit/{fork_commit(fork)}."], cwd=ROOT)  # fmt: skip
+            sys.exit(f"error: HEAD does not declare version {version}; commit pyproject.toml before publishing")
+        target = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        notes = (
+            f"Overlays warp-lang {warp_version}. Built from the Warp fork at "
+            f"https://github.com/DavidDobas/warp/commit/{fork_commit(fork)}."
+        )
+        run(
+            ["gh", "release", "create", f"v{version}", wheel_path, "--prerelease", "--target", target,
+             "--title", f"warp-metal {version}", "--notes", notes],
+            cwd=ROOT,
+        )  # fmt: skip
 
 
 def require_release_commit():
@@ -113,9 +109,7 @@ def require_release_commit():
 
     The release tag is put on HEAD, so the tagged tree has to describe the wheel that is attached to it.
     """
-    dirty = subprocess.check_output(
-        ["git", "status", "--porcelain"], cwd=ROOT, text=True
-    ).strip()
+    dirty = subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()
     if dirty:
         sys.exit(
             "error: --publish needs the release commit first. generate.py has updated the version or the "
@@ -125,9 +119,7 @@ def require_release_commit():
 
 
 def fork_commit(fork):
-    return subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=fork, text=True
-    ).strip()
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=fork, text=True).strip()
 
 
 if __name__ == "__main__":

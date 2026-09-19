@@ -1,9 +1,9 @@
 """Run in a clean environment that has only the built wheel and its dependencies installed."""
 
 import numpy as np
-
 import warp as wp
 import warp.sparse
+
 import warp_metal
 
 active, reason = warp_metal.status()

@@ -18,14 +18,10 @@ class OverlayBuildHook(BuildHookInterface):
         if self.target_name != "wheel":
             return
         package = os.path.join(self.root, "src", "warp_metal")
-        missing = [
-            name for name in REQUIRED if not os.path.exists(os.path.join(package, name))
-        ]
+        missing = [name for name in REQUIRED if not os.path.exists(os.path.join(package, name))]
         if missing:
             raise RuntimeError(
-                "the overlay has not been generated (missing: "
-                + ", ".join(missing)
-                + "); "
+                "the overlay has not been generated (missing: " + ", ".join(missing) + "); "
                 "build wheels with tools/release.py"
             )
         build_data["pure_python"] = False

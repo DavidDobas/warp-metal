@@ -43,3 +43,6 @@ path = "hatch_build.py"
 
 [tool.hatch.build.targets.sdist]
 include = ["src", "tools", "hatch_build.py", "README.md", "LICENSE", "NOTICE", "warp_metal_boot.pth", "pyproject.toml"]
+
+[tool.ruff]
+line-length = 120

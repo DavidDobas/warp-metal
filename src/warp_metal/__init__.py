@@ -6,6 +6,6 @@ runtime; it activates automatically through a ``.pth`` hook, so nothing has to b
 explicitly. ``warp_metal.status()`` reports whether the overlay is active and why not.
 """
 
-from warp_metal._bootstrap import status, REQUIRED_WARP_VERSION, FORK_COMMIT
+from warp_metal._bootstrap import FORK_COMMIT, REQUIRED_WARP_VERSION, status
 
-__all__ = ["status", "REQUIRED_WARP_VERSION", "FORK_COMMIT"]
+__all__ = ["FORK_COMMIT", "REQUIRED_WARP_VERSION", "status"]
