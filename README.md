@@ -7,15 +7,14 @@ such as [MuJoCo Warp](https://github.com/google-deepmind/mujoco_warp) and
 [mjlab](https://github.com/mujocolab/mjlab), keep their normal dependency on `warp-lang`; on a Mac
 you add this one package and simulate on the GPU.
 
-Until the first PyPI release, install the wheel from the GitHub release (the pinned `warp-lang`
-nightly comes from NVIDIA's package index, so add that index once):
+This is an independent community project. It is not affiliated with or endorsed by NVIDIA; Warp is
+NVIDIA's project and trademark.
 
 ```
-uv add "warp-metal @ https://github.com/DavidDobas/warp-metal/releases/download/v1.18.0.dev2026091702/warp_metal-1.18.0.dev2026091702-py3-none-macosx_11_0_arm64.whl" \
-       --index nvidia=https://pypi.nvidia.com
+uv add warp-metal        # or: pip install warp-metal
 ```
 
-With `pip`: `pip install --extra-index-url https://pypi.nvidia.com <wheel url>`.
+This installs `warp-lang 1.17.0` from PyPI next to it; nothing else is needed.
 
 ```python
 import warp as wp
@@ -61,9 +60,10 @@ https://github.com/DavidDobas/warp/blob/main/docs/user_guide/metal.rst
 
 ## Versions
 
-A release is named after the `warp-lang` version it overlays plus a revision (for the nightly
-previews the revision is two digits appended to the date: `1.18.0.dev2026091701` overlays
-`warp-lang 1.18.0.dev20260917`).
+A release is named after the `warp-lang` version it overlays plus a revision: `warp-metal 1.17.0.1`
+is the first release for `warp-lang 1.17.0`. Preview builds for Warp nightlies are attached to the
+GitHub releases of this repository (the revision is then two digits appended to the nightly's date,
+and the nightly itself comes from NVIDIA's package index, `https://pypi.nvidia.com`).
 
 The package overlays modules of one exact `warp-lang` version and pins it as a dependency
 (see `pyproject.toml`). A new `warp-lang` release needs a matching `warp-metal` release; until it
@@ -106,6 +106,8 @@ widens with more environments.
 This repository holds no copy of Warp. It contains the import hook (`src/warp_metal/_bootstrap.py`),
 the tools that build a wheel, and this README. The backend itself is developed and tested in a fork
 of Warp, https://github.com/DavidDobas/warp, whose `main` branch is NVIDIA's `main` plus the Metal backend.
+Releases for a stable Warp version are built from a branch of that fork based on NVIDIA's release tag
+(`metal-1.17` for `warp-lang 1.17.0`).
 
 A release is built from a checkout of that fork:
 

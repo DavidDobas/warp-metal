@@ -56,18 +56,29 @@ def main():
     with open(os.path.join(fork, "VERSION.md")) as f:
         warp_version = f.read().strip()
 
+    # A stable Warp release has to resolve from PyPI alone, because that is what `pip install warp-metal`
+    # gives users; only nightlies need NVIDIA's index and pre-release resolution.
+    nightly = ".dev" in warp_version
+    download_index = ["--extra-index-url", NVIDIA_INDEX] if nightly else []
+    install_index = (
+        ["--prerelease", "allow", "--index-strategy", "unsafe-best-match", "--extra-index-url", NVIDIA_INDEX]
+        if nightly
+        else []
+    )
+
     with tempfile.TemporaryDirectory() as tmp:
         # stock wheel: what the overlay is compared against and what users will have installed
         run(
             ["uvx", "pip", "download", "--no-deps", "--only-binary=:all:", "--platform", "macosx_11_0_arm64",
-             "--python-version", "3.12", "--extra-index-url", NVIDIA_INDEX, f"warp-lang=={warp_version}", "-d", tmp]
+             "--python-version", "3.12", *download_index, f"warp-lang=={warp_version}", "-d", tmp]
         )  # fmt: skip
         stock = os.path.join(tmp, "stock")
         with zipfile.ZipFile(glob.glob(os.path.join(tmp, "warp_lang-*.whl"))[0]) as wheel:
             wheel.extractall(stock)
 
         if not args.skip_build:
-            run(["uv", "run", "build_lib.py"], cwd=fork)
+            # only the core library is shipped; the LLVM helper comes from the stock wheel
+            run(["uv", "run", "build_lib.py", "--no-standalone"], cwd=fork)
         run([sys.executable, os.path.join(ROOT, "tools", "generate.py"), fork, "--stock", stock,
              "--revision", args.revision])  # fmt: skip
 
@@ -82,8 +93,7 @@ def main():
         env = os.path.join(tmp, "env")
         run(["uv", "venv", "--python", "3.12", env])
         python = os.path.join(env, "bin", "python")
-        run(["uv", "pip", "install", "--python", python, "--prerelease", "allow", "--index-strategy",
-             "unsafe-best-match", "--extra-index-url", NVIDIA_INDEX, wheel_path])  # fmt: skip
+        run(["uv", "pip", "install", "--python", python, *install_index, wheel_path])
         run([python, os.path.join(ROOT, "tools", "smoke_test.py")], cwd=tmp)
 
     print(f"\nbuilt and tested {wheel_path}")

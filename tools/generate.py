@@ -124,11 +124,15 @@ def main():
     if fork_version != warp_version:
         sys.exit(f"error: the fork is at version {fork_version}, the stock wheel is {warp_version}")
     if stock_commit is None:
-        print(
-            "warning: the stock wheel records no source commit; cannot check the fork's base",
-            file=sys.stderr,
-        )
-    else:
+        # release wheels record no source commit; their source is NVIDIA's release tag
+        tag = f"v{warp_version}"
+        try:
+            stock_commit = run(["git", "rev-parse", "--verify", "--quiet", f"{tag}^{{commit}}"], fork)
+        except subprocess.CalledProcessError:
+            if ".dev" not in warp_version:
+                sys.exit(f"error: the fork has no tag {tag} to check its base against; fetch NVIDIA's tags")
+            print("warning: the stock wheel records no source commit; cannot check the fork's base", file=sys.stderr)
+    if stock_commit is not None:
         try:
             run(["git", "merge-base", "--is-ancestor", stock_commit, "HEAD"], fork)
         except subprocess.CalledProcessError:
@@ -137,10 +141,7 @@ def main():
                 "does not contain. Merge that commit into the fork first, otherwise the overlay would "
                 "revert upstream changes."
             )
-        ahead = run(
-            ["git", "rev-list", "--count", "--first-parent", f"{stock_commit}..HEAD"],
-            fork,
-        )
+        ahead = run(["git", "rev-list", "--count", "--first-parent", f"{stock_commit}..HEAD"], fork)
         print(f"fork contains upstream {stock_commit[:12]} plus {ahead} first-parent commits")
     commit = run(["git", "rev-parse", "HEAD"], fork)
     if run(["git", "status", "--porcelain", "--untracked-files=no"], fork) and not args.allow_dirty:
@@ -261,8 +262,13 @@ def main():
 
 
 def package_version(warp_version, revision):
-    """``1.18.0`` -> ``1.18.0.NN``; nightlies ``1.18.0.devYYYYMMDD`` -> ``1.18.0.devYYYYMMDDNN``."""
-    return warp_version + revision if ".dev" in warp_version else f"{warp_version}.{revision}"
+    """``1.17.0`` + ``01`` -> ``1.17.0.1``; nightlies ``1.18.0.devYYYYMMDD`` + ``01`` -> ``1.18.0.devYYYYMMDD01``.
+
+    The result is already in PEP 440 normal form, so it equals the version in the wheel's file name.
+    """
+    if ".dev" in warp_version:
+        return warp_version + revision
+    return f"{warp_version}.{int(revision)}"
 
 
 if __name__ == "__main__":
